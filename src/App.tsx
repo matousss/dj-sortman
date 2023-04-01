@@ -1,48 +1,37 @@
-import {useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import './App.css'
 import {getFrequencyGenerator} from "./soundPlayer";
 import {NotifyArray} from "./notifyArray";
+import {bubbleSort, fishYates, fishYatesInteractive, mergeSort, selectionSort} from "./algorithms";
+import {Bar, Button, Selector, SwitchInput} from "./Components";
+import {Transition} from "@headlessui/react";
 
-function shuffle(array: Array<any>) {
-    let currentIndex = array.length, randomIndex;
-    while (currentIndex != 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-    }
-    return array;
-}
-
-async function shuffleInteractive(array: NotifyArray): Promise<NotifyArray> {
-    let currentIndex = array.length(), randomIndex;
-    while (currentIndex != 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        await array.swap(currentIndex, randomIndex)
-    }
-    return array;
-}
-const Bar = ({color = 'white', height = 100}) =>
-    <div className={'grow flex pr-[1px]'}>
-        <div className={'w-full mt-auto'} style={{height: `${height}%`, backgroundColor: color}}>
-
-        </div>
-    </div>
-
-const Bars = ({values, colors}: { values: number[], colors: Map<number, string> }) =>
-    <div className={'grow bg-gray-600 flex'}>
-        {
-            values.map((v) => <Bar color={colors.get(v)} height={v} key={v}/>)
-        }
-    </div>
 
 const frequencyRange = [100, 1000]
 
+const Algorithm: {
+    [key: string]: (array: NotifyArray) => any
+} = {
+    'Bubble Sort': bubbleSort,
+    'Selection Sort': selectionSort,
+    'Merge Sort': mergeSort,
+}
+
+const AlgorithmNames = Object.keys(Algorithm)
+const Speeds = [2, 8, 12, 20, 30, 45, 50, 100, 120, 150, 200, 250, 500, 1000]
+const SIZES = ['16', '30', '32', '50', '64', '128', '100', '256', '1024']
 function App() {
-    const l = 256;
-    const speed = 12;
-    const [values, setValues] = useState<number[]>([...Array(l)].map((v, i) => (i + 1) * (100 / l)))
+    const [count, setCount] = useState<number>(256)
+    const [values, setValues] = useState<number[]>([])
     const [colors, setColors] = useState<Map<number, string>>(new Map<number, string>())
+    const [isWorking, setIsWorking] = useState<boolean>(false)
+    const [animateShuffle, setAnimateShuffle] = useState<boolean>(true)
+    const [algorithm, setAlgorithm] = useState<string>(AlgorithmNames[0])
+    const [speed, setSpeed] = useState<number>(12)
+
+    useEffect(() => {
+        setValues(fishYates([...Array(count)].map((v, i) => (i + 1) * (100 / count))))
+    }, [count])
 
     useEffect(() => {
         console.log('values', values)
@@ -88,86 +77,92 @@ function App() {
         setColors(new Map<number, string>());
     }
 
-    async function bubbleSort(array: NotifyArray) {
-        while (!await array.isSorted()) {
-            for (let i = 0; i < array.length() - 1; i++) {
-                if (await array.compare(i, i + 1)) {
-                    await array.swap(i, i + 1)
-                }
-            }
-        }
-
-        return array;
-    }
-
-    async function selectionSort(array: NotifyArray, start = 0, end?: number | undefined): Promise<NotifyArray> {
-        if (end === undefined) end = array.length() - 1;
-        console.log(array.length())
-        for (let i = start; i < end; i++) {
-            let min = i;
-            for (let j = i + 1; j < end + 1; j++) {
-                if (!await array.compare(j, min)) {
-                    min = j;
-                }
-            }
-            await array.swap(i, min)
-        }
-
-        return array;
-    }
-
-    async function mergeSort(array: NotifyArray) {
-        for (let i = 1; i / 2 < array.length(); i *= 2) {
-            console.log(i)
-            for (let j = 0; j < array.length(); j += i) {
-                console.log(j, j + i)
-                await selectionSort(array, j, Math.min(j + i, array.length() - 1))
-            }
-        }
-    }
-
 
     return (
         <>
-            <div className={'h-[20vh] p-2'}>
-                <button onClick={() => setValues(shuffle([...values]))}>
-                    Shuffle (No Animation)
-                </button>
-                <button onClick={async () => await shuffleInteractive(getPlayingArray(values))}>
-                    Fisher–Yates shuffle
-                </button>
-                <button className={'button'} onClick={() => playSound(1000, 125)}>Test Sound</button>
-                <button className={'button'} onClick={playAll}>
-                    Play All
-                </button>
-                <button onClick={async () => {
-                    await bubbleSort(getPlayingArray(values))
-                    await playAll()
-                }
-                }>
-                    Bubble Sort
-                </button>
-                <button onClick={async () => {
-                    await selectionSort(getPlayingArray(values))
-                    await playAll()
-                }}>
-                    Selection Sort
-                </button>
-                <button onClick={async () => {
-                    await mergeSort(getPlayingArray(values))
-                    await playAll()
-                }}>
-                    Merge Sort
-                </button>
-                <button onClick={async () => {
-                    let a = getPlayingArray(values);
-                    let p = [...[...Array(1000)].map(() => shuffleInteractive(a))];
-                    await Promise.all(p);
-                }}>
-                    Plz no
-                </button>
+            <div
+                className={'bg-gray-700 relative z-40 w-[100vw] h-[18vh] flex  overflow-auto shadow-md border-b border-gray-500 text-gray-200 gap-x-4'}>
+                <div className={'absolute w-full h-full z-50 bg-gray-700 flex md:flex-row flex-col grid grid-cols-2 lg:grid-cols-6 gap-y-2 p-2'}>
+                   <span className={'mt-2 mr-auto'}>
+                            Algorithm:
+                        </span>
+                    <Selector options={AlgorithmNames}
+                              selected={algorithm}
+                              onChange={setAlgorithm}
+                              disabled={isWorking}
+                    />
+                    <span className={'mt-2 mr-auto'}>
+                            Delay:
+                        </span>
+                    <Selector options={Speeds.map(v => v.toString() + ' ms')}
+                              selected={speed.toString() + ' ms'}
+                              onChange={v => setSpeed(parseInt(v.replace(' ms', '')))}
+                              disabled={isWorking}
+                    />
+
+
+                    <span className={'mt-2 mr-auto'}>
+                            Size:
+                            </span>
+                    <Selector options={SIZES}
+                              selected={'128'}
+                              onChange={v => setCount(parseInt(v))}
+                              disabled={isWorking}
+                    />
+
+                    <span className={'mt-2 mr-auto'}>
+                        Animate shuffle:
+                    </span>
+                    <div className={'mb-4'}>
+                        <div className={'w-[12rem] flex justify-center'}>
+                            <SwitchInput disabled={isWorking} checked={animateShuffle} onChange={setAnimateShuffle}/>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <Transition
+                    enterFrom={'-translate-y-[200%]'}
+                    leaveTo={'-translate-y-[200%]'}
+                    show={!isWorking}
+                    className={'fixed flex top-[18%] duration-500 p-0 w-full h-fit'}>
+                    <div
+                        className={'flex mx-auto w-full md:w-1/2 bg-gray-700 border border-gray-500 border-t-0 shadow-md rounded-b-[80%]'}>
+                        <div className={'m-auto p-4 flex flex-col gap-4 text-white'}>
+                            <button
+                                className={'opacity-100 bg-gray-600 text-3xl p-5 rounded-md shadow-md hover:bg-gray-500 duration-200'}
+                                onClick={async () => {
+                                    await setIsWorking(true);
+                                    await Algorithm[algorithm](getPlayingArray(values));
+                                    await playAll();
+                                    await setIsWorking(false);
+                                }}>
+                                Let's rock!
+                            </button>
+                            <div className={'flex justify-center'}>
+                                <Button onClick={async () => {
+                                    setIsWorking(true);
+                                    animateShuffle ?
+                                        (await fishYatesInteractive(getPlayingArray(values)))
+                                        : setValues(fishYates([...values]))
+                                    setIsWorking(false);
+                                }}
+                                        disabled={isWorking}
+                                >
+                                    Shuffle
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </Transition>
             </div>
-            <Bars values={values} colors={colors}/>
+
+            <div className={'relative grow bg-gray-600 flex'}>
+                {
+                    values.map((v) => <Bar color={colors.get(v)} height={v} key={v}/>)
+                }
+            </div>
         </>
     )
 }

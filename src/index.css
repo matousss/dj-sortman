@@ -1,4 +1,0 @@
-.button, button {
-    @apply cursor-pointer bg-gray-600 text-white p-2 m-2 rounded-md text-gray-200 duration-200;
-    @apply hover:bg-gray-500 hover:text-white;
-}
