@@ -33,10 +33,6 @@ function App() {
         setValues(fishYates([...Array(count)].map((v, i) => (i + 1) * (100 / count))))
     }, [count])
 
-    useEffect(() => {
-        console.log('values', values)
-    }, [values])
-
 
     const playSound = getFrequencyGenerator()
     const getPlayingArray = (values: number[]) => {

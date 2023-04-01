@@ -14,7 +14,7 @@ export async function bubbleSort(array: NotifyArray) {
 
 export async function selectionSort(array: NotifyArray, start = 0, end?: number | undefined): Promise<NotifyArray> {
     if (end === undefined) end = array.length() - 1;
-    console.log(array.length())
+
     for (let i = start; i < end; i++) {
         let min = i;
         for (let j = i + 1; j < end + 1; j++) {
@@ -30,9 +30,7 @@ export async function selectionSort(array: NotifyArray, start = 0, end?: number 
 
 export async function mergeSort(array: NotifyArray) {
     for (let i = 1; i / 2 < array.length(); i *= 2) {
-        console.log(i)
         for (let j = 0; j < array.length(); j += i) {
-            console.log(j, j + i)
             await selectionSort(array, j, Math.min(j + i, array.length() - 1))
         }
     }
