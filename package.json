@@ -1,9 +1,11 @@
 {
   "name": "dj-sortman",
+  "homepage": "matousss.github.io/dj-sortman",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "prebuild": "vite build",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
