@@ -58,7 +58,7 @@ export const Selector = ({
                             <Listbox.Option
                                 key={i}
                                 className={({active}) =>
-                                    `text-sm md:text-base relative cursor-default select-none py-2 pl-10 pr-4 mx-1 hover:bg-gray-500
+                                    `text-right text-sm md:text-base relative cursor-default select-none py-2 pl-10 pr-4 mx-1 hover:bg-gray-500
                                 ${active ? 'bg-gray-600 text-gray-300' : 'text-gray-200'}`}
                                 value={v}
                             >
