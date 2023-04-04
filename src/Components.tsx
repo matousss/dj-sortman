@@ -37,7 +37,7 @@ export const Selector = ({
                 as={'button'}
 
                 className={
-                `${disabled ? 'pointer-events-none text-gray-400' : ''} relative w-[10rem] cursor-default rounded-lg bg-gray-600 py-2 pl-3 pr-10 text-left shadow-sm text-sm md:text-lg`
+                `${disabled ? 'pointer-events-none text-gray-400' : ''} relative w-[90%] text-right cursor-default rounded-lg bg-gray-600 py-2 pl-3 pr-10 text-left shadow-sm text-sm md:text-lg`
             }>
                 <span className="block truncate">{selected}</span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">

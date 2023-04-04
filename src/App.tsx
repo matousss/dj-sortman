@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import './App.css'
 import {getFrequencyGenerator} from "./soundPlayer";
 import {NotifyArray} from "./notifyArray";
-import {bubbleSort, fishYates, fishYatesInteractive, mergeSort, selectionSort} from "./algorithms";
+import {bogoSort, bozoSort, bubbleSort, fishYates, fishYatesInteractive, mergeSort, selectionSort} from "./algorithms";
 import {Bar, Button, Selector, SwitchInput} from "./Components";
 import {Transition} from "@headlessui/react";
 
@@ -15,11 +15,13 @@ const Algorithm: {
     'Bubble Sort': bubbleSort,
     'Selection Sort': selectionSort,
     'Merge Sort': mergeSort,
+    'Bogo Sort': bogoSort,
+    'Bozo Sort': bozoSort,
 }
 
 const AlgorithmNames = Object.keys(Algorithm)
 const Speeds = [2, 8, 12, 20, 30, 45, 50, 100, 120, 150, 200, 250, 500, 1000]
-const SIZES = [16, 30, 32, 50, 64, 100, 128, 200, 256, 512, 1024]
+const SIZES = [8, 16, 30, 32, 50, 64, 100, 128, 200, 256, 512, 1024]
 function App() {
     const [count, setCount] = useState<number>(256)
     const [values, setValues] = useState<number[]>([])

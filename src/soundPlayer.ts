@@ -8,7 +8,8 @@ export const getFrequencyGenerator = () => {
         oscillator.frequency.value = frequency;
         oscillator.connect(audioCtx.destination);
         oscillator.start();
-
+        //let startTime = Date.now()
+        //while (Date.now() - startTime < duration) await new Promise(r => setTimeout(r, 1))
         await new Promise(r => setTimeout(r, duration));
         oscillator.stop()
 
