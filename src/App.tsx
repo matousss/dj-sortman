@@ -19,7 +19,7 @@ const Algorithm: {
 
 const AlgorithmNames = Object.keys(Algorithm)
 const Speeds = [2, 8, 12, 20, 30, 45, 50, 100, 120, 150, 200, 250, 500, 1000]
-const SIZES = ['16', '30', '32', '50', '64', '128', '100', '256', '1024']
+const SIZES = [16, 30, 32, 50, 64, 100, 128, 200, 256, 512, 1024]
 function App() {
     const [count, setCount] = useState<number>(256)
     const [values, setValues] = useState<number[]>([])
@@ -100,8 +100,8 @@ function App() {
                     <span className={'mt-2 mr-auto'}>
                             Size:
                             </span>
-                    <Selector options={SIZES}
-                              selected={'128'}
+                    <Selector options={SIZES.map(v => v.toString())}
+                              selected={count.toString()}
                               onChange={v => setCount(parseInt(v))}
                               disabled={isWorking}
                     />
